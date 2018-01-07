@@ -20,7 +20,7 @@ if it's an Array of objects or not.
 **Generator** provides a interface to write jsons to Jackson streamed writer.
 
 **Handler** works together with parser. It receives data extracted by parser, 
-it'a an interface for client to be able to react on events/
+it'a an interface for client to be able to react on events.
 
 ## Usage
 
@@ -31,7 +31,7 @@ Initialization:
 `new JsonApiParser(instance of java.io.InputStream, handlerObject)`
 
 During parsing input stream parser will call methods on instance on handler. 
-See [handler interface][1] for more.
+See handler section below for more.
 
 ### Generator
 
@@ -44,7 +44,7 @@ Client software should call appropriate methods on instance of generator and pas
 
 ### Handler
 
-[1] Handler is a interface for parser, it implements following methods:
+Handler is a interface for parser, it implements following methods:
 
   ```def startDocument: Unit = {}
 
