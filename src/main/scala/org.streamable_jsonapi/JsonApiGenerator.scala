@@ -1,4 +1,4 @@
-package org.streamable_jsonapi
+package com.github.lkalwa.streamable_jsonapi
 
 import org.codehaus.jackson.JsonFactory
 
