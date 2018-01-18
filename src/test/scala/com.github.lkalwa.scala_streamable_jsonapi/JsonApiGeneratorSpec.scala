@@ -1,4 +1,4 @@
-package package com.github.lkalwa.scala_streamable_jsonapi
+package com.github.lkalwa.scala_streamable_jsonapi
 
 import java.io.ByteArrayOutputStream
 

@@ -1,4 +1,4 @@
-package package com.github.lkalwa.scala_streamable_jsonapi
+package com.github.lkalwa.scala_streamable_jsonapi
 
 import org.codehaus.jackson.{JsonFactory, JsonToken}
 
@@ -11,8 +11,8 @@ class JsonApiParser[H <: JsonApiHandler](inputStream: java.io.InputStream, val h
   private val streamedSections = List("data", "included", "errors")
 
   // According to jsonapi spec (http://jsonapi.org/format/):
-  // `data` - may be object OR array of objects, will be streamed when in Array
-  // `errors`, `included` - have to be an arrays, and will be streamed
+  // `data` - may be an object OR array of objects, so it will be streamed if it's an array of objects
+  // `errors`, `included` - have to be an array, and will be streamed
   // `jsonapi`, `meta`, `links` - are objects, thus no streaming.
   // If there is only one object for `data`, no `startData` and `endData` events will be called on handler,
   // parsed data object will be passed to `data` method on handler
