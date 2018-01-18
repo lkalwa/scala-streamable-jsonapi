@@ -1,7 +1,6 @@
 package com.github.lkalwa.scala_streamable_jsonapi
 
 import java.io.ByteArrayOutputStream
-
 import org.scalatest._
 
 class JsonApiGeneratorSpec extends FlatSpec with Matchers with BeforeAndAfterEach {

@@ -1,7 +1,6 @@
 package com.github.lkalwa.scala_streamable_jsonapi
 
 import java.io.ByteArrayInputStream
-
 import org.scalatest._
 
 class HandlerForTesting extends JsonApiHandler {
