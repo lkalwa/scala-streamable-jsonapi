@@ -2,7 +2,7 @@
 
 ## What is jsonapi?
 
-See:http://jsonapi.org
+See: http://jsonapi.org
 
 ## Introduction
 
@@ -77,8 +77,8 @@ Handler is a interface for parser, it implements following methods:
 
 Names correspond to jsonapi members so it's pretty straightforward to understand which one is called when.
 
-Note: during streamed parsing of `data` or `included` extracted jsons as `Map[String, Any]` are passed to handler via the `resource` method.
-`data` method is only used IF `data` section in parsed json is a single json object.
+**Note**: during streamed parsing of `data` or `included` extracted jsons as `Map[String, Any]` are passed to handler via the `resource` method.
+`data` method is only used **IF** `data` section in parsed json is a single json object.
 
 
 
