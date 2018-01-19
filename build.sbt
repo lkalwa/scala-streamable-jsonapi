@@ -3,7 +3,7 @@ import Dependencies._
 lazy val root = (project in file(".")).
   settings(
     inThisBuild(List(
-      organization := "org.streamable-jsonapi",
+      organization := "com.github.lkalwa",
       scalaVersion := "2.12.4",
       version      := "0.1"
     )),
