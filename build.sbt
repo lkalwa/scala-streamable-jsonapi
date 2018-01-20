@@ -4,8 +4,8 @@ lazy val root = (project in file(".")).
   settings(
     inThisBuild(List(
       organization := "com.github.lkalwa",
-      scalaVersion := "2.12.4",
-      version      := "0.1"
+      scalaVersion := "2.11.11",
+      version      := "0.3"
     )),
     name := "scala-streamable-jsonapi",
     libraryDependencies += "org.codehaus.jackson" % "jackson-jaxrs" % "1.9.13",
