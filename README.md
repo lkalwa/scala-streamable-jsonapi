@@ -46,33 +46,33 @@ Client software should call appropriate methods on instance of generator and pas
 
 Handler is a interface for parser, it implements following methods:
 
-  ```def startDocument: Unit = {}
+  ```def startDocument: Any = {}
 
-  def endDocument: Unit = {}
+  def endDocument: Any = {}
 
-  def startData: Unit = {}
+  def startData: Any = {}
 
-  def endData: Unit = {}
+  def endData: Any = {}
 
-  def data(obj: Map[String, Any]): Unit = {}
+  def data(obj: Map[String, Any]): Any = {}
 
-  def startIncluded: Unit = {}
+  def startIncluded: Any = {}
 
-  def endIncluded: Unit = {}
+  def endIncluded: Any = {}
 
-  def resource(obj: Map[String, Any]): Unit = {}
+  def resource(obj: Map[String, Any]): Any = {}
 
-  def startErrors: Unit = {}
+  def startErrors: Any = {}
 
-  def endErrors: Unit = {}
+  def endErrors: Any = {}
 
-  def error(obj: Map[String, Any]): Unit = {}
+  def error(obj: Map[String, Any]): Any = {}
 
-  def meta(obj: Map[String, Any]): Unit = {}
+  def meta(obj: Map[String, Any]): Any = {}
 
-  def jsonapi(obj: Map[String, Any]): Unit = {}
+  def jsonapi(obj: Map[String, Any]): Any = {}
 
-  def links(obj: Map[String, Any]): Unit = {}
+  def links(obj: Map[String, Any]): Any = {}
 ```  
 
 Names correspond to jsonapi members so it's pretty straightforward to understand which one is called when.
