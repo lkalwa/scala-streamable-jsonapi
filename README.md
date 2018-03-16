@@ -1,3 +1,5 @@
+[![Coverage Status](https://coveralls.io/repos/github/klobuczek/scala-streamable-jsonapi/badge.svg?branch=travis)](https://coveralls.io/github/klobuczek/scala-streamable-jsonapi?branch=travis)
+
 # Scala streamable jsonapi
 
 ## What is jsonapi?
