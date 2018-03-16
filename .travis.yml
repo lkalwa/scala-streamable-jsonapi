@@ -1,13 +1,13 @@
 language: scala
 
-script: "sbt ++$TRAVIS_SCALA_VERSION coverage test coverageReport"
+script: "sbt ++$TRAVIS_SCALA_VERSION coverage test"
 
 after_success:
-  - sbt coveralls
+  - [ "${$TRAVIS_SCALA_VERSION}" = "2.12.4" ] && sbt coverageReport coveralls
 
 scala:
    - 2.11.12
-   - 2.12.3
+   - 2.12.4
 
 jdk:
    - oraclejdk8
