@@ -1,3 +1,5 @@
+[![Coverage Status](https://coveralls.io/repos/github/klobuczek/scala-streamable-jsonapi/badge.svg?branch=travis)](https://coveralls.io/github/klobuczek/scala-streamable-jsonapi?branch=travis)
+
 # Scala streamable jsonapi
 
 ## What is jsonapi?
@@ -79,6 +81,3 @@ Names correspond to jsonapi members so it's pretty straightforward to understand
 
 **Note**: during streamed parsing of `data` or `included` extracted jsons as `Map[String, Any]` are passed to handler via the `resource` method.
 `data` method is only used **IF** `data` section in parsed json is a single json object.
-
-
-
