@@ -8,7 +8,7 @@ See: http://jsonapi.org
 
 ## Introduction
 
-scala-streamable-jsonapi consists of two major components:
+scala-streamable-jsonapi consists of three major components:
 
 1. Parser (JsonApiParser)
 2. Generator (JsonApiGenerator)
