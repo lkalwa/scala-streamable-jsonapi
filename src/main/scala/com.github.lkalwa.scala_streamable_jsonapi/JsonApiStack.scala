@@ -12,10 +12,10 @@ class JsonApiStack {
 
   def topLevelMember: Boolean = stack.toList == List(JsonToken.START_OBJECT)
 
-  def topLevelMemberArray = stack.toList == List(JsonToken.START_ARRAY, JsonToken.START_OBJECT)
+  def topLevelMemberArray: Boolean = stack.toList == List(JsonToken.START_ARRAY, JsonToken.START_OBJECT)
 
-  def inTopLevelMemberArray =
+  def inTopLevelMemberArray: Boolean =
     stack.toList == List(JsonToken.START_OBJECT, JsonToken.START_ARRAY, JsonToken.START_OBJECT)
 
-  def singleTopLevelObject = stack.toList == List(JsonToken.START_OBJECT, JsonToken.START_OBJECT)
+  def singleTopLevelObject: Boolean = stack.toList == List(JsonToken.START_OBJECT, JsonToken.START_OBJECT)
 }

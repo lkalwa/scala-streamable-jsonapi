@@ -20,7 +20,7 @@ class JsonApiGenerator(outputStream: java.io.OutputStream) extends JsonApiHandle
 
   override def endData(): Unit = endArray("data")
 
-  override def data(obj: Map[String, Any]) = {
+  override def data(obj: Map[String, Any]): Unit = {
     fieldName("data", true)
     jsonObject(obj)
   }

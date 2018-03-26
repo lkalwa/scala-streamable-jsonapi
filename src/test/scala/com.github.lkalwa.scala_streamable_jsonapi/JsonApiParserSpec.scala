@@ -3,11 +3,16 @@ package com.github.lkalwa.scala_streamable_jsonapi
 import java.io.ByteArrayInputStream
 import org.scalatest._
 
+import scala.collection.mutable
+
 class HandlerForTesting extends JsonApiHandler {
   var objectMap = Map[String, Any]()
   var timestamps = collection.mutable.MutableList[String]()
   var states = collection.mutable.MutableList[String]()
+  var errors = collection.mutable.MutableList[Map[String, Any]]()
   var metaObject = Map[String, Any]()
+  var links = Map[String, Any]()
+  var jsonapi = Map[String, Any]()
 
   override def resource(obj: Map[String, Any]): Unit = {
     objectMap = obj
@@ -35,16 +40,18 @@ class HandlerForTesting extends JsonApiHandler {
 
   override def endErrors: Unit = states += "endErrors"
 
-  override def error(obj: Map[String, Any]): Unit = {}
+  override def error(obj: Map[String, Any]): Unit = {
+    errors += obj
+  }
 
   override def meta(obj: Map[String, Any]): Unit = {
     metaObject = obj
     states += "meta"
   }
 
-  override def jsonapi(obj: Map[String, Any]): Unit = {}
+  override def jsonapi(obj: Map[String, Any]): Unit = jsonapi = obj
 
-  override def links(obj: Map[String, Any]): Unit = {}
+  override def links(obj: Map[String, Any]): Unit = links = obj
 }
 
 
@@ -79,7 +86,7 @@ class JsonApiParserSpec extends FlatSpec with Matchers with BeforeAndAfterEach {
     handler.states should equal(List("startDocument","startData", "endData", "startIncluded", "endIncluded", "endDocument"))
   }
 
-  it should "pass extracted resource attributes as soon as it's parser" in {
+  it should "pass extracted resource attributes as soon as they're parsed" in {
     prepare("""{"data" : [{"id": "1"}, {"id":"2"}, {"id":"3"}, {"id":"4"}]}""")
     assert(handler.timestamps.toSet.size == 4 )
   }
@@ -97,5 +104,24 @@ class JsonApiParserSpec extends FlatSpec with Matchers with BeforeAndAfterEach {
   it should "handle non streamable members properly" in {
     prepare("""{"meta" : {"id": "1", "relationships" : [{"id" : "11"},{"id": "22"},{"id": "33"}]}}""")
     handler.states should equal(List("startDocument", "meta", "endDocument"))
+  }
+
+  it should "extract errors from streamed 'errors' section" in {
+    prepare("""{"errors": [{"id": "1", "status": "403", "title": "forbidden"}, {"id": "2", "status": "404", "title": "not found"} ] }""")
+    handler.errors should equal(mutable.MutableList(Map("id" -> "1", "status" -> "403", "title" -> "forbidden"),
+      Map("id" -> "2", "status" -> "404", "title" -> "not found")))
+  }
+
+  it should "work with jsonapi object" in {
+    prepare("""{"jsonapi": {"version": "1.1"}}""")
+    handler.jsonapi should equal(Map("version" -> "1.1"))
+  }
+
+  it should "work with links object" in  {
+    prepare(
+      """{"links": {"self":
+        |"https://github.com/lkalwa/scala-streamable-jsonapi/blob/master/src/test/scala/com.github.lkalwa.scala_streamable_jsonapi/JsonApiParserSpec.scala"}}""".stripMargin)
+    handler.links should equal(Map("self" ->
+      "https://github.com/lkalwa/scala-streamable-jsonapi/blob/master/src/test/scala/com.github.lkalwa.scala_streamable_jsonapi/JsonApiParserSpec.scala"))
   }
 }

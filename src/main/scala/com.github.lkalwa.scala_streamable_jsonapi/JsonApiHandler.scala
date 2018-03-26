@@ -2,31 +2,31 @@ package com.github.lkalwa.scala_streamable_jsonapi
 
 trait JsonApiHandler {
 
-  def startDocument: Any = {}
+  def startDocument: Unit = {}
 
-  def endDocument: Any = {}
+  def endDocument: Unit = {}
 
-  def startData: Any = {}
+  def startData: Unit = {}
 
-  def endData: Any = {}
+  def endData: Unit = {}
 
-  def data(obj: Map[String, Any]): Any = {}
+  def data(obj: Map[String, Any]): Unit = {}
 
-  def startIncluded: Any = {}
+  def startIncluded: Unit = {}
 
-  def endIncluded: Any = {}
+  def endIncluded: Unit = {}
 
-  def resource(obj: Map[String, Any]): Any = {}
+  def resource(obj: Map[String, Any]): Unit = {}
 
-  def startErrors: Any = {}
+  def startErrors: Unit = {}
 
-  def endErrors: Any = {}
+  def endErrors: Unit = {}
 
-  def error(obj: Map[String, Any]): Any = {}
+  def error(obj: Map[String, Any]): Unit = {}
 
-  def meta(obj: Map[String, Any]): Any = {}
+  def meta(obj: Map[String, Any]): Unit = {}
 
-  def jsonapi(obj: Map[String, Any]): Any = {}
+  def jsonapi(obj: Map[String, Any]): Unit = {}
 
-  def links(obj: Map[String, Any]): Any = {}
+  def links(obj: Map[String, Any]): Unit = {}
 }

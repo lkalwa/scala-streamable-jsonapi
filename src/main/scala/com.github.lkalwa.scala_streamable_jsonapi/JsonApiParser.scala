@@ -23,8 +23,9 @@ class JsonApiParser[H <: JsonApiHandler](inputStream: java.io.InputStream, val h
       startDocument
       if (parser.getCurrentName != null) newSection
       val parsedData = parse
-      if (!streamed && parsedData.isInstanceOf[Map[String, Any]])
+      if (!streamed && parsedData.isInstanceOf[Map[String, Any]]) {
         passNonStreamedSectionToHandler(parsedData.asInstanceOf[Map[String, Any]])
+      }
       readStream
     } else {
       endDocument
@@ -46,16 +47,18 @@ class JsonApiParser[H <: JsonApiHandler](inputStream: java.io.InputStream, val h
 
   @tailrec
   private def parseObject(map: Map[String, Any] = Map.empty): Map[String, Any] = {
-    if (stack.topLevelMember) return Map.empty
-
-    parser.nextValue()
-    if (completelyParsed && streamed)
-      passObject(map)
-    else if (endOfObject) {
-      stack.pop
-      map
-    } else
-      parseObject(map.updated(parser.getCurrentName, parse))
+    if (stack.topLevelMember) {
+      Map.empty
+    } else {
+      parser.nextValue()
+      if (completelyParsed && streamed) {
+        passObject(map)
+      } else if (endOfObject) {
+        stack.pop
+        map
+      } else
+        parseObject(map.updated(parser.getCurrentName, parse))
+    }
   }
 
   private def endOfObject: Boolean = parser.getCurrentToken == JsonToken.END_OBJECT

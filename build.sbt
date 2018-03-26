@@ -1,4 +1,4 @@
-
+import Dependencies._
 
 lazy val root = (project in file(".")).
   settings(
@@ -6,11 +6,12 @@ lazy val root = (project in file(".")).
       organization := "com.github.lkalwa",
       scalaVersion := "2.11.12",
       crossScalaVersions := Seq("2.11.12", "2.12.4"),
-      version      := "0.33"
+      version      := "0.34"
     )),
-    name := "scala-streamable-jsonapi",
-    libraryDependencies += "org.codehaus.jackson" % "jackson-jaxrs" % "1.9.13",
-    libraryDependencies += scalaTest
+    name := "scala-streamable_jsonapi",
+    libraryDependencies += scalaTest,
+    libraryDependencies += scalaTic,
+    libraryDependencies += jackson
   )
 
 
