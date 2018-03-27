@@ -8,7 +8,7 @@ lazy val root = (project in file(".")).
       crossScalaVersions := Seq("2.11.12", "2.12.4"),
       version      := "0.34"
     )),
-    name := "scala-streamable_jsonapi",
+    name := "scala-streamable-jsonapi",
     libraryDependencies += scalaTest,
     libraryDependencies += scalaTic,
     libraryDependencies += jackson
