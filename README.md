@@ -1,4 +1,4 @@
-[![Coverage Status](https://coveralls.io/repos/github/lkalwa/scala-streamable-jsonapi/badge.svg?branch=travis)](https://coveralls.io/github/klobuczek/scala-streamable-jsonapi?branch=travis)
+[![Coverage Status](https://coveralls.io/repos/github/lkalwa/scala-streamable-jsonapi/badge.svg?branch=travis)](https://coveralls.io/github/lkalwa/scala-streamable-jsonapi?branch=travis)
 
 # Scala streamable jsonapi
 
