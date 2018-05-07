@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/lkalwa/scala-streamable-jsonapi.svg?branch=master)](https://travis-ci.com/lkalwa/scala-streamable-jsonapi)
+[![Build Status](https://travis-ci.org/lkalwa/scala-streamable-jsonapi.svg?branch=master)](https://travis-ci.com/lkalwa/scala-streamable-jsonapi)
 [![Coverage Status](https://coveralls.io/repos/github/lkalwa/scala-streamable-jsonapi/badge.svg?branch=master)](https://coveralls.io/github/lkalwa/scala-streamable-jsonapi?branch=master)
 
 # Scala streamable jsonapi
