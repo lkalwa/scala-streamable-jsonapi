@@ -2,58 +2,58 @@ package com.github.lkalwa.scala_streamable_jsonapi
 
 import org.codehaus.jackson.JsonFactory
 
-class JsonApiGenerator(outputStream: java.io.OutputStream) extends JsonApiHandler {
+class JsonApiGenerator(outputStream: java.io.OutputStream) {
   private val generator = new JsonFactory().createJsonGenerator(outputStream)
   private var currentSection = ""
 
-  override def startDocument(): Unit = generator.writeStartObject()
+  def startDocument(): Unit = generator.writeStartObject()
 
-  override def endDocument(): Unit = {
+  def endDocument(): Unit = {
     generator.writeEndObject()
     generator.close()
   }
 
-  override def startData(): Unit = {
+   def startData: Unit = {
     fieldName("data", true)
     startArray
   }
 
-  override def endData(): Unit = endArray("data")
+   def endData: Unit = endArray("data")
 
-  override def data(obj: Map[String, Any]): Unit = {
+   def data(obj: Map[String, Any]): Unit = {
     fieldName("data", true)
     jsonObject(obj)
   }
 
-  override def startIncluded(): Unit = {
+   def startIncluded: Unit = {
     fieldName("included", true)
     startArray
   }
 
-  override def endIncluded(): Unit = endArray("included")
+   def endIncluded: Unit = endArray("included")
 
-  override def resource(obj: Map[String, Any]): Unit = jsonObject(obj)
+   def resource(obj: Map[String, Any]): Unit = jsonObject(obj)
 
-  override def startErrors: Unit = {
+   def startErrors: Unit = {
     fieldName("errors", true)
-    startArray()
+    startArray
   }
 
-  override def endErrors: Unit = endArray("errors")
+   def endErrors: Unit = endArray("errors")
 
-  override def error(obj: Map[String, Any]): Unit = jsonObject(obj)
+   def error(obj: Map[String, Any]): Unit = jsonObject(obj)
 
-  override def meta(obj: Map[String, Any]): Unit = {
+   def meta(obj: Map[String, Any]): Unit = {
     fieldName("meta", true)
     jsonObject(obj)
   }
 
-  override def jsonapi(obj: Map[String, Any]): Unit = {
+   def jsonapi(obj: Map[String, Any]): Unit = {
     fieldName("jsonapi", true)
     jsonObject(obj)
   }
 
-  override def links(obj: Map[String, Any]): Unit = {
+   def links(obj: Map[String, Any]): Unit = {
     fieldName("links", true)
     jsonObject(obj)
   }
@@ -65,8 +65,8 @@ class JsonApiGenerator(outputStream: java.io.OutputStream) extends JsonApiHandle
 
   private def writeValue(value: Any): Unit =
     value match {
-      case arr: List[Any] => writeArray(arr)
-      case obj: Map[String, Any] => jsonObject(obj)
+      case arr: List[_] => writeArray(arr)
+      case map: Map[_, _] => jsonObject(map.asInstanceOf[Map[String, Any]])
       case _ => generator.writeString(value.toString)
     }
 
@@ -81,11 +81,11 @@ class JsonApiGenerator(outputStream: java.io.OutputStream) extends JsonApiHandle
     endObject
   }
 
-  private def startArray(): Unit = generator.writeStartArray()
+  private def startArray(): Unit = generator.writeStartArray
 
-  private def startObject: Unit = generator.writeStartObject()
+  private def startObject: Unit = generator.writeStartObject
 
-  private def endObject: Unit = generator.writeEndObject()
+  private def endObject: Unit = generator.writeEndObject
 
   private def endArray(sectionName: String): Unit =
     if (currentSection == sectionName) generator.writeEndArray else throw new Exception(s"${currentSection} has no ending")
