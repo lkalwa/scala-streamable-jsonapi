@@ -13,33 +13,33 @@ class JsonApiGenerator(outputStream: java.io.OutputStream) {
     generator.close()
   }
 
-   def startData: Unit = {
+   def startData(): Unit = {
     fieldName("data", true)
     startArray
   }
 
-   def endData: Unit = endArray("data")
+   def endData(): Unit = endArray("data")
 
    def data(obj: Map[String, Any]): Unit = {
     fieldName("data", true)
     jsonObject(obj)
   }
 
-   def startIncluded: Unit = {
+   def startIncluded(): Unit = {
     fieldName("included", true)
     startArray
   }
 
-   def endIncluded: Unit = endArray("included")
+   def endIncluded(): Unit = endArray("included")
 
    def resource(obj: Map[String, Any]): Unit = jsonObject(obj)
 
-   def startErrors: Unit = {
+   def startErrors(): Unit = {
     fieldName("errors", true)
     startArray
   }
 
-   def endErrors: Unit = endArray("errors")
+   def endErrors(): Unit = endArray("errors")
 
    def error(obj: Map[String, Any]): Unit = jsonObject(obj)
 
@@ -67,6 +67,9 @@ class JsonApiGenerator(outputStream: java.io.OutputStream) {
     value match {
       case arr: List[_] => writeArray(arr)
       case map: Map[_, _] => jsonObject(map.asInstanceOf[Map[String, Any]])
+      case num: Double => generator.writeNumber(num)
+      case bool: Boolean => generator.writeBoolean(bool)
+      case null => generator.writeNull()
       case _ => generator.writeString(value.toString)
     }
 

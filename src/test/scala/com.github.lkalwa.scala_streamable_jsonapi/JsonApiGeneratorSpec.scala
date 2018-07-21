@@ -2,6 +2,8 @@ package com.github.lkalwa.scala_streamable_jsonapi
 
 import java.io.ByteArrayOutputStream
 import org.scalatest._
+import net.liftweb.json._
+import collection.JavaConverters._
 
 class JsonApiGeneratorSpec extends FlatSpec with Matchers with BeforeAndAfterEach {
   var outputStream: ByteArrayOutputStream = _
@@ -44,11 +46,32 @@ class JsonApiGeneratorSpec extends FlatSpec with Matchers with BeforeAndAfterEac
       """{"links" : {"self" : "http://example.com/posts"}}""".stripMargin.replaceAll("\\s", ""))
   }
 
-  it should "raise Exception if client is using bad methods" in {
+  it should "raise Exception if client is using methods not correct in terms of current location" in {
     generator.startDocument
     generator.startData
     generator.resource(Map("type" -> "role", "attributes" -> Map("title_name" -> "CEO", "name" -> "CEO", "role_salary" -> 5000000)))
     val exception = intercept[java.lang.Exception] { generator.endErrors }
     exception.getMessage should equal("data has no ending")
+  }
+
+  it should "handle numeric values" in {
+    generator.startDocument()
+    generator.data(Map("value" -> 10.5))
+    generator.endDocument()
+    JsonParser.parse(outputStream.toString).\("data").\("value").values should equal(10.5)
+  }
+
+  it should "handle boolean values" in {
+    generator.startDocument()
+    generator.data(Map("value" -> true))
+    generator.endDocument()
+    JsonParser.parse(outputStream.toString).\("data").\("value").values should equal(true)
+  }
+
+  it should "handle null values" in {
+    generator.startDocument()
+    generator.data(Map("value" -> null))
+    generator.endDocument()
+    assert(JsonParser.parse(outputStream.toString).\("data").\("value").values == null)
   }
 }
