@@ -10,12 +10,14 @@ class JsonApiParser[H <: JsonApiHandler](inputStream: java.io.InputStream, val h
   private var currentSection = ""
   private val streamedSections = List("data", "included", "errors")
 
-  // According to jsonapi spec (http://jsonapi.org/format/):
-  // `data` - may be an object OR array of objects, so it will be streamed if it's an array of objects
-  // `errors`, `included` - have to be an array, and will be streamed
-  // `jsonapi`, `meta`, `links` - are objects, thus no streaming.
-  // If there is only one object for `data`, no `startData` and `endData` events will be called on handler,
-  // parsed data object will be passed to `data` method on handler
+  /**
+   * According to jsonapi spec (http://jsonapi.org/format/):
+   * `data` - may be an object OR array of objects, so it will be streamed if it's an array of objects
+   * `errors`, `included` - have to be an array, and will be streamed
+   * `jsonapi`, `meta`, `links` - are objects, thus no streaming.
+   * If there is only one object for `data`, no `startData` and `endData` events will be called on handler,
+   * parsed data object will be passed to `data` method on handler
+   */
 
   @tailrec
   final def readStream: Unit = {
@@ -23,7 +25,7 @@ class JsonApiParser[H <: JsonApiHandler](inputStream: java.io.InputStream, val h
       startDocument
       if (parser.getCurrentName != null) newSection
       val parsedData = parse
-      if (!streamed && parsedData.isInstanceOf[Map[String, Any]]) {
+      if (!streamed && parsedData.isInstanceOf[Map[_, _]]) {
         passNonStreamedSectionToHandler(parsedData.asInstanceOf[Map[String, Any]])
       }
       readStream
