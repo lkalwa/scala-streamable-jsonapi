@@ -23,7 +23,7 @@ class JsonApiGeneratorSpec extends FlatSpec with Matchers with BeforeAndAfterEac
     generator.endDocument
     outputStream.toString should equal(
       """{"data" : {"type" : "role",
-        | "attributes" : {"title_name" : "CEO", "name" : "CEO", "role_salary" : "5000000"}}}""".stripMargin.replaceAll("\\s", ""))
+        | "attributes" : {"title_name" : "CEO", "name" : "CEO", "role_salary" : 5000000}}}""".stripMargin.replaceAll("\\s", ""))
   }
 
   it should "generate arrays" in {
@@ -34,8 +34,8 @@ class JsonApiGeneratorSpec extends FlatSpec with Matchers with BeforeAndAfterEac
     generator.endData
     generator.endDocument
     outputStream.toString should equal(
-      """{"data" : [{"type" : "role", "attributes" : {"title_name" : "CEO", "name" : "CEO", "role_salary" : "5000000"}},
-        | {"type" : "role", "attributes" : {"title_name" : "CFO", "name" : "CFO", "role_salary" : "4000000"} }]}""".stripMargin.replaceAll("\\s", ""))
+      """{"data" : [{"type" : "role", "attributes" : {"title_name" : "CEO", "name" : "CEO", "role_salary" : 5000000}},
+        | {"type" : "role", "attributes" : {"title_name" : "CFO", "name" : "CFO", "role_salary" : 4000000} }]}""".stripMargin.replaceAll("\\s", ""))
   }
 
   it should "work properly with non streamable sections" in {
