@@ -61,6 +61,13 @@ class JsonApiGeneratorSpec extends FlatSpec with Matchers with BeforeAndAfterEac
     JsonParser.parse(outputStream.toString).\("data").\("value").values should equal(10.5)
   }
 
+  it should "handle integer values" in {
+    generator.startDocument()
+    generator.data(Map("value" -> 10))
+    generator.endDocument()
+    JsonParser.parse(outputStream.toString).\("data").\("value").values should equal(10)
+  }
+
   it should "handle boolean values" in {
     generator.startDocument()
     generator.data(Map("value" -> true))

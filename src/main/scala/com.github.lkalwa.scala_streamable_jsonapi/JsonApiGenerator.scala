@@ -66,8 +66,8 @@ class JsonApiGenerator(outputStream: java.io.OutputStream) {
   private def writeValue(value: Any): Unit =
     value match {
       case arr: List[_] => writeArray(arr)
-      case map: Map[_, _] => jsonObject(map.asInstanceOf[Map[String, Any]])
-      case num: Double => generator.writeNumber(num)
+      case map:  Map[_, _] => jsonObject(map.asInstanceOf[Map[String, Any]])
+      case num: java.lang.Number => generator.writeNumber(num.toString)
       case bool: Boolean => generator.writeBoolean(bool)
       case null => generator.writeNull()
       case _ => generator.writeString(value.toString)
@@ -93,3 +93,5 @@ class JsonApiGenerator(outputStream: java.io.OutputStream) {
   private def endArray(sectionName: String): Unit =
     if (currentSection == sectionName) generator.writeEndArray else throw new Exception(s"${currentSection} has no ending")
 }
+
+
