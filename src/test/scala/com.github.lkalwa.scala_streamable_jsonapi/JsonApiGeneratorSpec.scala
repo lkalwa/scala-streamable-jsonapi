@@ -1,9 +1,10 @@
 package com.github.lkalwa.scala_streamable_jsonapi
 
 import java.io.ByteArrayOutputStream
+
 import org.scalatest._
-import net.liftweb.json._
-import collection.JavaConverters._
+import play.api.libs.json._
+
 
 class JsonApiGeneratorSpec extends FlatSpec with Matchers with BeforeAndAfterEach {
   var outputStream: ByteArrayOutputStream = _
@@ -58,27 +59,27 @@ class JsonApiGeneratorSpec extends FlatSpec with Matchers with BeforeAndAfterEac
     generator.startDocument()
     generator.data(Map("value" -> 10.5))
     generator.endDocument()
-    JsonParser.parse(outputStream.toString).\("data").\("value").values should equal(10.5)
+    Json.parse(outputStream.toString).\("data").\("value").get should equal(JsNumber(10.5))
   }
 
   it should "handle integer values" in {
     generator.startDocument()
     generator.data(Map("value" -> 10))
     generator.endDocument()
-    JsonParser.parse(outputStream.toString).\("data").\("value").values should equal(10)
+    Json.parse(outputStream.toString).\("data").\("value").get should equal(JsNumber(10))
   }
 
   it should "handle boolean values" in {
     generator.startDocument()
     generator.data(Map("value" -> true))
     generator.endDocument()
-    JsonParser.parse(outputStream.toString).\("data").\("value").values should equal(true)
+    Json.parse(outputStream.toString).\("data").\("value").get should equal(JsTrue)
   }
 
   it should "handle null values" in {
     generator.startDocument()
     generator.data(Map("value" -> null))
     generator.endDocument()
-    assert(JsonParser.parse(outputStream.toString).\("data").\("value").values == null)
+    Json.parse(outputStream.toString).\("data").\("value").get should equal(JsNull)
   }
 }
