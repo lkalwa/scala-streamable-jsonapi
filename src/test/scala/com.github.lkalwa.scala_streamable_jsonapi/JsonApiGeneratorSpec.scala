@@ -14,72 +14,94 @@ class JsonApiGeneratorSpec extends FlatSpec with Matchers with BeforeAndAfterEac
     outputStream = new ByteArrayOutputStream()
     generator = new JsonApiGenerator(outputStream)
   }
+  
+  def startDoc(): Unit = generator.startDocument()
 
-  override def afterEach(): Unit = outputStream.close()
+  def startData(): Unit = generator.startData()
+
+  def endData(): Unit = generator.endData()
+
+  def data(map: Map[String, Any]) = generator.data(map)
+
+  def endDoc(): Unit = generator.endDocument()
+
+  def resource(map: Map[String, Any]): Unit = generator.resource(map)
+
+  def close(): Unit = generator.close()
+
+  def matchContent(str: String) = outputStream.toString should equal(str)
 
   "Generator" should "generate objects" in {
-    generator.startDocument
-    generator.data(Map("type" -> "role",
+    startDoc()
+    data(Map("type" -> "role",
       "attributes" -> Map("title_name" -> "CEO", "name" -> "CEO", "role_salary" -> 5000000)))
-    generator.endDocument
-    outputStream.toString should equal(
+    endDoc()
+    close()
+    matchContent(
       """{"data" : {"type" : "role",
         | "attributes" : {"title_name" : "CEO", "name" : "CEO", "role_salary" : 5000000}}}""".stripMargin.replaceAll("\\s", ""))
   }
 
   it should "generate arrays" in {
-    generator.startDocument
-    generator.startData
-    generator.resource(Map("type" -> "role", "attributes" -> Map("title_name" -> "CEO", "name" -> "CEO", "role_salary" -> 5000000)))
-    generator.resource(Map("type" -> "role", "attributes" -> Map("title_name" -> "CFO", "name" -> "CFO", "role_salary" -> 4000000)))
-    generator.endData
-    generator.endDocument
-    outputStream.toString should equal(
+    startDoc()
+    startData()
+    resource(Map("type" -> "role", "attributes" -> Map("title_name" -> "CEO", "name" -> "CEO", "role_salary" -> 5000000)))
+    resource(Map("type" -> "role", "attributes" -> Map("title_name" -> "CFO", "name" -> "CFO", "role_salary" -> 4000000)))
+    endData()
+    endDoc()
+    close()
+    matchContent(
       """{"data" : [{"type" : "role", "attributes" : {"title_name" : "CEO", "name" : "CEO", "role_salary" : 5000000}},
         | {"type" : "role", "attributes" : {"title_name" : "CFO", "name" : "CFO", "role_salary" : 4000000} }]}""".stripMargin.replaceAll("\\s", ""))
   }
 
   it should "work properly with non streamable sections" in {
-    generator.startDocument
+    startDoc()
     generator.links(Map("self" -> "http://example.com/posts"))
-    generator.endDocument
-    outputStream.toString should equal(
+    endDoc()
+    close()
+    matchContent(
       """{"links" : {"self" : "http://example.com/posts"}}""".stripMargin.replaceAll("\\s", ""))
   }
 
   it should "raise Exception if client is using methods not correct in terms of current location" in {
-    generator.startDocument
-    generator.startData
-    generator.resource(Map("type" -> "role", "attributes" -> Map("title_name" -> "CEO", "name" -> "CEO", "role_salary" -> 5000000)))
-    val exception = intercept[java.lang.Exception] { generator.endErrors }
+    startDoc()
+    startData()
+    resource(Map("type" -> "role", "attributes" -> Map("title_name" -> "CEO", "name" -> "CEO", "role_salary" -> 5000000)))
+    close()
+    val exception = intercept[java.lang.Exception] { generator.endErrors() }
     exception.getMessage should equal("data has no ending")
   }
 
   it should "handle numeric values" in {
-    generator.startDocument()
-    generator.data(Map("value" -> 10.5))
-    generator.endDocument()
+    startDoc()
+    data(Map("value" -> 10.5))
+    endDoc()
+    close()
     Json.parse(outputStream.toString).\("data").\("value").get should equal(JsNumber(10.5))
   }
 
   it should "handle integer values" in {
-    generator.startDocument()
-    generator.data(Map("value" -> 10))
-    generator.endDocument()
+    startDoc()
+    data(Map("value" -> 10))
+    endDoc()
+    close()
     Json.parse(outputStream.toString).\("data").\("value").get should equal(JsNumber(10))
   }
 
   it should "handle boolean values" in {
-    generator.startDocument()
-    generator.data(Map("value" -> true))
-    generator.endDocument()
+    startDoc()
+    data(Map("value" -> true))
+    endDoc()
+    close()
     Json.parse(outputStream.toString).\("data").\("value").get should equal(JsTrue)
   }
 
   it should "handle null values" in {
-    generator.startDocument()
-    generator.data(Map("value" -> null))
-    generator.endDocument()
+    startDoc()
+    data(Map("value" -> null))
+    endDoc()
+    close()
     Json.parse(outputStream.toString).\("data").\("value").get should equal(JsNull)
   }
 }

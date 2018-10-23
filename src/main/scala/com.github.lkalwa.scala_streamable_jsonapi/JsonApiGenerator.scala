@@ -8,10 +8,7 @@ class JsonApiGenerator(outputStream: java.io.OutputStream) {
 
   def startDocument(): Unit = generator.writeStartObject()
 
-  def endDocument(): Unit = {
-    generator.writeEndObject()
-    generator.close()
-  }
+  def endDocument(): Unit = generator.writeEndObject()
 
    def startData(): Unit = {
     fieldName("data", true)
@@ -92,6 +89,8 @@ class JsonApiGenerator(outputStream: java.io.OutputStream) {
 
   private def endArray(sectionName: String): Unit =
     if (currentSection == sectionName) generator.writeEndArray else throw new Exception(s"${currentSection} has no ending")
+
+  def close(): Unit = generator.close()
 }
 
 
