@@ -85,4 +85,13 @@ Names correspond to jsonapi members so it's pretty straightforward to understand
 
 ###Examples
 
-TBD
+When doing streamed parsing and serving response also as a stream using a JsonApiGenerator **do not forget** to call
+`close()` explicitly. Otherwise for  client request will never be considered as finished.
+
+```
+  def createStructureFromStream(): Unit = {
+    txWithCheckpoint(checkPoint => new Parser(new StructureCreator(phase, uploadInfo, filename, checkPoint)).readStream,
+      failIf = () => uploadInfo.anyErrors)
+    uploadInfo.close()
+  }
+```
