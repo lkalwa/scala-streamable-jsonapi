@@ -1,6 +1,6 @@
 package com.github.lkalwa.scala_streamable_jsonapi
 
-import org.codehaus.jackson.{JsonFactory, JsonToken}
+import com.fasterxml.jackson.core.{JsonFactory, JsonToken}
 
 import scala.annotation.tailrec
 

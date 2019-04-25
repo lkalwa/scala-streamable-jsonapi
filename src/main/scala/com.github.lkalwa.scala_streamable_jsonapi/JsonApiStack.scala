@@ -1,6 +1,6 @@
 package com.github.lkalwa.scala_streamable_jsonapi
 
-import org.codehaus.jackson.JsonToken
+import com.fasterxml.jackson.core.JsonToken
 import scala.collection.mutable.ArrayStack
 
 class JsonApiStack extends ArrayStack[JsonToken] {

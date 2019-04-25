@@ -1,7 +1,7 @@
 package com.github.lkalwa.scala_streamable_jsonapi
 
 import org.scalatest._
-import org.codehaus.jackson.JsonToken
+import com.fasterxml.jackson.core.JsonToken
 
 class JsonApiStackSpec extends FlatSpec {
   val stack = new JsonApiStack()
