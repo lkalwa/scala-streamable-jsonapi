@@ -1,9 +1,9 @@
 package com.github.lkalwa.scala_streamable_jsonapi
 
-import org.codehaus.jackson.JsonFactory
+import com.fasterxml.jackson.core.JsonFactory
 
 class JsonApiGenerator(outputStream: java.io.OutputStream) {
-  private val generator = new JsonFactory().createJsonGenerator(outputStream)
+  private val generator = new JsonFactory().createGenerator(outputStream)
   private var currentSection = ""
 
   def startDocument(): Unit = generator.writeStartObject()
@@ -92,5 +92,3 @@ class JsonApiGenerator(outputStream: java.io.OutputStream) {
 
   def close(): Unit = generator.close()
 }
-
-
