@@ -92,5 +92,3 @@ class JsonApiGenerator(outputStream: java.io.OutputStream) {
 
   def close(): Unit = generator.close()
 }
-
-

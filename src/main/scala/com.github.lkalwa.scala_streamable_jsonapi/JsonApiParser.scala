@@ -4,8 +4,10 @@ import com.fasterxml.jackson.core.{JsonFactory, JsonToken}
 
 import scala.annotation.tailrec
 
+import scala.collection.convert.Decorators
+
 class JsonApiParser[H <: JsonApiHandler](inputStream: java.io.InputStream, val handler: H) {
-  private val parser = new JsonFactory().createJsonParser(inputStream)
+  private val parser = new JsonFactory().createParser(inputStream)
   private lazy val stack = new JsonApiStack()
   private var currentSection = ""
   private val streamedSections = List("data", "included", "errors")
@@ -112,7 +114,7 @@ class JsonApiParser[H <: JsonApiHandler](inputStream: java.io.InputStream, val h
 
   private def parserValue: Any =
     parser.getCurrentToken match {
-      case JsonToken.VALUE_NUMBER_FLOAT | JsonToken.VALUE_NUMBER_INT => parser.getNumberValue
+      case JsonToken.VALUE_NUMBER_FLOAT | JsonToken.VALUE_NUMBER_INT => toScalaType(parser.getNumberValue)
       case JsonToken.VALUE_FALSE => false
       case JsonToken.VALUE_TRUE => true
       case JsonToken.VALUE_NULL => null
@@ -156,4 +158,18 @@ class JsonApiParser[H <: JsonApiHandler](inputStream: java.io.InputStream, val h
       case "links" => handler.links(map)
       case _ => None
     }
+
+  private def toScalaType(numericVal: java.lang.Number): Any = {
+    def stringify: String = numericVal.toString
+
+    numericVal match {
+      case _: java.lang.Integer => stringify.toInt
+      case _: java.lang.Long => stringify.toLong
+      case _: java.lang.Float => stringify.toFloat
+      case _: java.lang.Double => stringify.toDouble
+      case _: java.lang.Short => stringify.toShort
+      case _: java.lang.Byte => stringify.toByte
+      case _ => numericVal
+    }
+  }
 }
