@@ -149,7 +149,7 @@ class JsonApiParser[H <: JsonApiHandler](inputStream: java.io.InputStream, val h
       case "included" => handler.endIncluded
       case "error" => handler.endErrors
       case _ => None
-  }
+    }
 
   def passNonStreamedSectionToHandler(map: Map[String, Any]): Unit =
     currentSection match {

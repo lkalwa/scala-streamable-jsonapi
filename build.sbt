@@ -5,8 +5,8 @@ lazy val root = (project in file(".")).
     inThisBuild(List(
       organization := "com.github.lkalwa",
       scalaVersion := "2.11.12",
-      crossScalaVersions := Seq("2.11.12", "2.12.8"),
-      version      := "0.6"
+      crossScalaVersions := Seq("2.11.12", "2.12.10"),
+      version      := "0.61"
     )),
     name := "scala-streamable-jsonapi",
     libraryDependencies += scalaTest,
@@ -14,7 +14,6 @@ lazy val root = (project in file(".")).
     libraryDependencies += jackson,
     libraryDependencies += scalaParser
   )
-
 
 homepage := Some(url("https://github.com/lkalwa/scala-streamable-jsonapi"))
 
@@ -36,3 +35,5 @@ publishTo := Some(
   else
     Opts.resolver.sonatypeStaging
 )
+
+coverageEnabled := true
