@@ -4,8 +4,6 @@ import com.fasterxml.jackson.core.{JsonFactory, JsonToken}
 
 import scala.annotation.tailrec
 
-import scala.collection.convert.Decorators
-
 class JsonApiParser[H <: JsonApiHandler](inputStream: java.io.InputStream, val handler: H) {
   private val parser = new JsonFactory().createParser(inputStream)
   private lazy val stack = new JsonApiStack()
