@@ -8,7 +8,7 @@ class JsonApiParser[H <: JsonApiHandler](inputStream: java.io.InputStream, val h
   private val parser = new JsonFactory().createParser(inputStream)
   private lazy val stack = new JsonApiStack()
   private var currentSection = ""
-  private val streamedSections = List("data", "included", "errors")
+  private val streamedSections = List("data", "included", "errors", "atomic:operations")
 
   /**
    * According to jsonapi spec (http://jsonapi.org/format/):
@@ -71,6 +71,7 @@ class JsonApiParser[H <: JsonApiHandler](inputStream: java.io.InputStream, val h
     currentSection match {
       case "errors" => handler.error(map)
       case "data" if stack.singleTopLevelObject => handler.data(map) //special treatment for data which is not an Array
+      case "atomic:operations" => handler.operation(map.head._2.toString, map.tail.getOrElse("data", Map()).asInstanceOf[Map[String, Any]])
       case _ => handler.resource(map)
     }
     stack.pop
@@ -136,6 +137,7 @@ class JsonApiParser[H <: JsonApiHandler](inputStream: java.io.InputStream, val h
   def notifyHandlerAboutStreaming: Unit =
     currentSection match {
       case "data" => handler.startData
+      case "atomic:operations" => handler.startOperations
       case "included" => handler.startIncluded
       case "errors" => handler.startErrors
       case _ => None
@@ -144,6 +146,7 @@ class JsonApiParser[H <: JsonApiHandler](inputStream: java.io.InputStream, val h
   def endStramingSection: Unit =
     currentSection match {
       case "data" => handler.endData
+      case "atomic:operations" => handler.endOperations
       case "included" => handler.endIncluded
       case "error" => handler.endErrors
       case _ => None
