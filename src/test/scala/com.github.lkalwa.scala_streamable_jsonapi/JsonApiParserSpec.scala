@@ -5,60 +5,10 @@ import org.scalatest._
 
 import scala.collection.mutable
 
-class HandlerForTesting extends JsonApiHandler {
-  var objectMap = Map[String, Any]()
-  var timestamps = collection.mutable.MutableList[String]()
-  var states = collection.mutable.MutableList[String]()
-  var errors = collection.mutable.MutableList[Map[String, Any]]()
-  var metaObject = Map[String, Any]()
-  var links = Map[String, Any]()
-  var jsonapi = Map[String, Any]()
-
-  override def resource(obj: Map[String, Any]): Unit = {
-    objectMap = obj
-    timestamps.+=(System.nanoTime().toString)
-  }
-
-  override def startDocument(): Unit = states += "startDocument"
-
-  override def endDocument(): Unit = states += "endDocument"
-
-  override def startData: Unit = states += "startData"
-
-  override def endData: Unit = states += "endData"
-
-  override def data(obj: Map[String, Any]): Unit = {
-    objectMap = obj
-    states += "dataWithoutStreaming"
-  }
-
-  override def startIncluded: Unit = states += "startIncluded"
-
-  override def endIncluded: Unit = states += "endIncluded"
-
-  override def startErrors: Unit = states += "startErrors"
-
-  override def endErrors: Unit = states += "endErrors"
-
-  override def error(obj: Map[String, Any]): Unit = {
-    errors += obj
-  }
-
-  override def meta(obj: Map[String, Any]): Unit = {
-    metaObject = obj
-    states += "meta"
-  }
-
-  override def jsonapi(obj: Map[String, Any]): Unit = jsonapi = obj
-
-  override def links(obj: Map[String, Any]): Unit = links = obj
-}
-
-
 class JsonApiParserSpec extends FlatSpec with Matchers with BeforeAndAfterEach {
-  var handler: HandlerForTesting = _
+  var handler: TestHandler = _
 
-  override def beforeEach(): Unit =  handler = new HandlerForTesting()
+  override def beforeEach(): Unit = handler = new TestHandler()
 
   def prepare(input: String): Unit = {
     new JsonApiParser(new ByteArrayInputStream(input.getBytes("UTF-8")), handler).readStream
@@ -76,19 +26,19 @@ class JsonApiParserSpec extends FlatSpec with Matchers with BeforeAndAfterEach {
       Map("type" -> "user", "id" -> "10", "relationships" -> List(Map("name" -> "rel2"), Map("name" -> "rel1"))))
   }
 
-  it should "not build maps from top level values" in  {
+  it should "not build maps from top level values" in {
     prepare("""{"data" : {"type" : "user", "id" : "10", "relationships": [{"name" : "rel1"}, {"name" : "rel2"}] }}""")
     assert(!handler.objectMap.contains("data"))
   }
 
   it should "notify about beginning and end of section" in {
     prepare("""{"data" : [{}], "included": [{}]}""")
-    handler.states should equal(List("startDocument","startData", "endData", "startIncluded", "endIncluded", "endDocument"))
+    handler.states should equal(List("startDocument", "startData", "endData", "startIncluded", "endIncluded", "endDocument"))
   }
 
   it should "pass extracted resource attributes as soon as they're parsed" in {
     prepare("""{"data" : [{"id": "1"}, {"id":"2"}, {"id":"3"}, {"id":"4"}]}""")
-    assert(handler.timestamps.toSet.size == 4 )
+    assert(handler.timestamps.toSet.size == 4)
   }
 
   it should "parse nested attributes array as any other simple attribute" in {
@@ -117,11 +67,37 @@ class JsonApiParserSpec extends FlatSpec with Matchers with BeforeAndAfterEach {
     handler.jsonapi should equal(Map("version" -> "1.1"))
   }
 
-  it should "work with links object" in  {
+  it should "work with links object" in {
     prepare(
       """{"links": {"self":
         |"https://github.com/lkalwa/scala-streamable-jsonapi/blob/master/src/test/scala/com.github.lkalwa.scala_streamable_jsonapi/JsonApiParserSpec.scala"}}""".stripMargin)
     handler.links should equal(Map("self" ->
       "https://github.com/lkalwa/scala-streamable-jsonapi/blob/master/src/test/scala/com.github.lkalwa.scala_streamable_jsonapi/JsonApiParserSpec.scala"))
   }
+
+  behavior of "Parser when dealing with operation extension"
+
+  it should "extract operation from parsed document and call corresponding method" in {
+    prepare(
+      """
+        |{
+        |  "atomic:operations":[{
+        |    "op": "add",
+        |    "data":{
+        |      "type": "structures",
+        |      "local:id": "12",
+        |      "attributes": {"name": "Structure Name"},
+        |      "relationships": {"phase": {"data": {"type": "phases","id": "123"}}}
+        |    }
+        |  }]
+        |}  """.stripMargin
+    )
+    handler.objectMap should equal(
+      Map("type" -> "structures", "local:id" -> "12",
+        "attributes" -> Map("name" -> "Structure Name"),
+        "relationships" -> Map("phase" -> Map("data" -> Map("type" -> "phases", "id" -> "123")))
+      )
+    )
+  }
 }
+
