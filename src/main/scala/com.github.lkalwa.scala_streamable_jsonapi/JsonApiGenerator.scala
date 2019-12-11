@@ -55,6 +55,15 @@ class JsonApiGenerator(outputStream: java.io.OutputStream) {
     jsonObject(obj)
   }
 
+  def startAtomicResults(): Unit = {
+    fieldName("atomic:results", true)
+    startArray
+  }
+
+  def atomicResult(obj: Map[String, Any]): Unit = jsonObject(obj)
+
+  def endAtomicResults(): Unit = endArray("atomic:results")
+
   private def fieldName(str: String, topLevelSection: Boolean = false): Unit = {
     if (topLevelSection) currentSection = str
     generator.writeFieldName(str)

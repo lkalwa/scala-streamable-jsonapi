@@ -29,6 +29,12 @@ class JsonApiGeneratorSpec extends FlatSpec with Matchers with BeforeAndAfterEac
 
   def close(): Unit = generator.close()
 
+  def startAtomicResults() = generator.startAtomicResults()
+
+  def atomicResult(obj: Map[String, Any]) = generator.atomicResult(obj)
+
+  def endAtomicResults() = generator.endAtomicResults()
+
   def matchContent(str: String) = outputStream.toString should equal(str)
 
   "Generator" should "generate objects" in {
@@ -103,5 +109,34 @@ class JsonApiGeneratorSpec extends FlatSpec with Matchers with BeforeAndAfterEac
     endDoc()
     close()
     Json.parse(outputStream.toString).\("data").\("value").get should equal(JsNull)
+  }
+
+  it should "properly return operation" in {
+    startDoc()
+    startAtomicResults()
+    atomicResult(
+      Map("op" -> "add",
+      "data" -> Map("type" -> "structures", "id" -> "12",
+        "attributes" -> Map("name" -> "StructureName"),
+        "relationships" -> Map("phase" -> Map("data" -> Map("type" -> "phases", "id" -> "123"))))
+      )
+    )
+    endAtomicResults()
+    endDoc()
+    close()
+    matchContent(
+      """
+        |{
+        |  "atomic:results":[{
+        |    "op": "add",
+        |    "data":{
+        |      "type":"structures",
+        |      "id": "12",
+        |      "attributes": {"name": "StructureName"},
+        |      "relationships": {"phase": {"data": {"type": "phases","id": "123"}}}
+        |    }
+        |  }]
+        |}  """.stripMargin.replaceAll("\\s", "")
+    )
   }
 }
