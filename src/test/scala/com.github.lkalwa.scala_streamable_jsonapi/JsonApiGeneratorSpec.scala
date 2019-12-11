@@ -115,10 +115,9 @@ class JsonApiGeneratorSpec extends FlatSpec with Matchers with BeforeAndAfterEac
     startDoc()
     startAtomicResults()
     atomicResult(
-      Map("op" -> "add",
-      "data" -> Map("type" -> "structures", "id" -> "12",
+      Map("type" -> "structures", "id" -> "12",
         "attributes" -> Map("name" -> "StructureName"),
-        "relationships" -> Map("phase" -> Map("data" -> Map("type" -> "phases", "id" -> "123"))))
+        "relationships" -> Map("phase" -> Map("data" -> Map("type" -> "phases", "id" -> "123")))
       )
     )
     endAtomicResults()
@@ -128,7 +127,6 @@ class JsonApiGeneratorSpec extends FlatSpec with Matchers with BeforeAndAfterEac
       """
         |{
         |  "atomic:results":[{
-        |    "op": "add",
         |    "data":{
         |      "type":"structures",
         |      "id": "12",

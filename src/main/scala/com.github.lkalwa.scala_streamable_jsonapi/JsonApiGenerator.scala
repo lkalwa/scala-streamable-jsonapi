@@ -60,7 +60,7 @@ class JsonApiGenerator(outputStream: java.io.OutputStream) {
     startArray
   }
 
-  def atomicResult(obj: Map[String, Any]): Unit = jsonObject(obj)
+  def atomicResult(obj: Map[String, Any]): Unit = jsonObject(Map("data" -> obj))
 
   def endAtomicResults(): Unit = endArray("atomic:results")
 
