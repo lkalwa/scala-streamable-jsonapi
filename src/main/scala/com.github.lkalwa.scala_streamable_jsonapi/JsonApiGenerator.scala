@@ -10,47 +10,47 @@ class JsonApiGenerator(outputStream: java.io.OutputStream) {
 
   def endDocument(): Unit = generator.writeEndObject()
 
-   def startData(): Unit = {
+  def startData(): Unit = {
     fieldName("data", true)
     startArray
   }
 
-   def endData(): Unit = endArray("data")
+  def endData(): Unit = endArray("data")
 
-   def data(obj: Map[String, Any]): Unit = {
+  def data(obj: Map[String, Any]): Unit = {
     fieldName("data", true)
     jsonObject(obj)
   }
 
-   def startIncluded(): Unit = {
+  def startIncluded(): Unit = {
     fieldName("included", true)
     startArray
   }
 
-   def endIncluded(): Unit = endArray("included")
+  def endIncluded(): Unit = endArray("included")
 
-   def resource(obj: Map[String, Any]): Unit = jsonObject(obj)
+  def resource(obj: Map[String, Any]): Unit = jsonObject(obj)
 
-   def startErrors(): Unit = {
+  def startErrors(): Unit = {
     fieldName("errors", true)
     startArray
   }
 
-   def endErrors(): Unit = endArray("errors")
+  def endErrors(): Unit = endArray("errors")
 
-   def error(obj: Map[String, Any]): Unit = jsonObject(obj)
+  def error(obj: Map[String, Any]): Unit = jsonObject(obj)
 
-   def meta(obj: Map[String, Any]): Unit = {
+  def meta(obj: Map[String, Any]): Unit = {
     fieldName("meta", true)
     jsonObject(obj)
   }
 
-   def jsonapi(obj: Map[String, Any]): Unit = {
+  def jsonapi(obj: Map[String, Any]): Unit = {
     fieldName("jsonapi", true)
     jsonObject(obj)
   }
 
-   def links(obj: Map[String, Any]): Unit = {
+  def links(obj: Map[String, Any]): Unit = {
     fieldName("links", true)
     jsonObject(obj)
   }
@@ -79,7 +79,11 @@ class JsonApiGenerator(outputStream: java.io.OutputStream) {
       case _ => generator.writeString(value.toString)
     }
 
-  private def writeArray(arr: List[Any]): Unit = arr.foreach(obj => jsonObject(obj.asInstanceOf[Map[String, Any]]))
+  private def writeArray(arr: List[Any]): Unit = {
+    startArray()
+    arr.foreach(obj => jsonObject(obj.asInstanceOf[Map[String, Any]]))
+    endArray()
+  }
 
   private def jsonObject(map: Map[String, Any]): Unit = {
     startObject
@@ -92,12 +96,14 @@ class JsonApiGenerator(outputStream: java.io.OutputStream) {
 
   private def startArray(): Unit = generator.writeStartArray
 
-  private def startObject: Unit = generator.writeStartObject
+  private def startObject(): Unit = generator.writeStartObject
 
-  private def endObject: Unit = generator.writeEndObject
+  private def endObject(): Unit = generator.writeEndObject
 
   private def endArray(sectionName: String): Unit =
-    if (currentSection == sectionName) generator.writeEndArray else throw new Exception(s"${currentSection} has no ending")
+    if (currentSection == sectionName) endArray() else throw new Exception(s"${currentSection} has no ending")
+
+  private def endArray(): Unit = generator.writeEndArray()
 
   def close(): Unit = generator.close()
 }

@@ -70,6 +70,29 @@ class JsonApiGeneratorSpec extends FlatSpec with Matchers with BeforeAndAfterEac
       """{"links" : {"self" : "http://example.com/posts"}}""".stripMargin.replaceAll("\\s", ""))
   }
 
+  it should "handle properly array values" in {
+    startDoc()
+    startAtomicResults()
+    atomicResult(Map("type" -> "structures", "id" -> "10",
+      "relationships" -> Map("functions" -> Map("data" -> List(Map("type" -> "functions", "id" -> "1"), Map("type" -> "functions", "id" -> "2"))))))
+    endAtomicResults()
+    endDoc()
+    close()
+    outputStream.toString
+    matchContent(
+      """
+        |{
+        |  "atomic:results":[{
+        |    "data":{
+        |      "type":"structures",
+        |      "id": "10",
+        |      "relationships": {"functions": {"data": [{"type": "functions","id": "1"},{"type": "functions","id": "2"}]}}
+        |    }
+        |  }]
+        |}  """.stripMargin.replaceAll("\\s", "")
+    )
+  }
+
   it should "raise Exception if client is using methods not correct in terms of current location" in {
     startDoc()
     startData()
