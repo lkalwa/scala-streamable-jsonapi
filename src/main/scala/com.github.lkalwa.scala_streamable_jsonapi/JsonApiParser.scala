@@ -1,6 +1,7 @@
 package com.github.lkalwa.scala_streamable_jsonapi
 
 import com.fasterxml.jackson.core.{JsonFactory, JsonToken}
+import com.fasterxml.jackson.core.JsonParser.Feature
 
 import scala.annotation.tailrec
 
@@ -9,6 +10,8 @@ class JsonApiParser[H <: JsonApiHandler](inputStream: java.io.InputStream, val h
   private lazy val stack = new JsonApiStack()
   private var currentSection = ""
   private val streamedSections = List("data", "included", "errors", "atomic:operations")
+
+  parser.configure(Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true)
 
   /**
    * According to jsonapi spec (http://jsonapi.org/format/):
@@ -117,7 +120,7 @@ class JsonApiParser[H <: JsonApiHandler](inputStream: java.io.InputStream, val h
       case JsonToken.VALUE_FALSE => false
       case JsonToken.VALUE_TRUE => true
       case JsonToken.VALUE_NULL => null
-      case _ => parser.getText
+      case _ => parser.getText()
     }
 
   private def newSection: Unit = if (!currentSection.isEmpty) currentSection = parser.getCurrentName
