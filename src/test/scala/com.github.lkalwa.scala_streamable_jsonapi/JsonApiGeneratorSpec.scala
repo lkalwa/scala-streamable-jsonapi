@@ -2,11 +2,13 @@ package com.github.lkalwa.scala_streamable_jsonapi
 
 import java.io.ByteArrayOutputStream
 
-import org.scalatest._
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should
 import play.api.libs.json._
 
 
-class JsonApiGeneratorSpec extends FlatSpec with Matchers with BeforeAndAfterEach {
+class JsonApiGeneratorSpec extends AnyFlatSpec with should.Matchers with BeforeAndAfterEach {
   var outputStream: ByteArrayOutputStream = _
   var generator: JsonApiGenerator = _
 

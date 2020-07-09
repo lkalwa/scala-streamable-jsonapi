@@ -1,53 +1,61 @@
 package com.github.lkalwa.scala_streamable_jsonapi
 
 import java.io.ByteArrayInputStream
-import org.scalatest._
+
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should
 
 import scala.collection.mutable
 
-class JsonApiParserSpec extends FlatSpec with Matchers with BeforeAndAfterEach {
+class JsonApiParserSpec extends AnyFlatSpec with should.Matchers with BeforeAndAfterEach {
   var handler: TestHandler = _
+  var parser: TestParser[TestHandler] = _
+  var parsedMap: Map[String, Any] = Map[String, Any]()
+
+  class TestParser[H <: JsonApiHandler](inputStream: java.io.InputStream, handler: H)
+    extends JsonApiParser(inputStream, handler) {
+    override def passObject(map: Map[String, Any]): Map[String, Any] = {
+      parsedMap = map
+      super.passObject(map)
+    }
+  }
 
   override def beforeEach(): Unit = handler = new TestHandler()
 
-  def prepare(input: String): Unit = {
-    new JsonApiParser(new ByteArrayInputStream(input.getBytes("UTF-8")), handler).readStream
-  }
+  def prepare(input: String): Unit =
+    new TestParser(new ByteArrayInputStream(input.getBytes("UTF-8")), handler).readStream
 
   "Parser" should "parse objects" in {
-    prepare("""{"data" : {"type" : "user", "id" : "10", "relationships": [{"name" : "rel1"}, {"name" : "rel2"}] }}""")
-    handler.objectMap should equal(Map("type" -> "user", "id" -> "10",
-      "relationships" -> List(Map("name" -> "rel2"), Map("name" -> "rel1"))))
+    prepare("""{"data":{"type":"users","id":"10"}}""")
+    parsedMap should equal(Map("type"->"users","id"->"10"))
   }
 
   it should "parse arrays" in {
-    prepare("""{"data" : {"type" : "user", "id" : "10", "relationships": [{"name" : "rel1"}, {"name" : "rel2"}] }}""")
-    handler.objectMap should equal(
-      Map("type" -> "user", "id" -> "10", "relationships" -> List(Map("name" -> "rel2"), Map("name" -> "rel1"))))
+    prepare("""{"data":{"type":"user","id":"10","attributes":{"grades":["A","B","C","D"]}}}""")
+    parsedMap should equal(
+      Map("type"->"user","id"->"10","attributes"-> Map("grades"-> List("D","C","B","A")))
+    )
   }
 
   it should "not build maps from top level values" in {
-    prepare("""{"data" : {"type" : "user", "id" : "10", "relationships": [{"name" : "rel1"}, {"name" : "rel2"}] }}""")
-    assert(!handler.objectMap.contains("data"))
+    prepare("""{"data":{"type":"user","id":"10"}}""")
+    assert(!parsedMap.contains("data"))
   }
 
   it should "notify about beginning and end of section" in {
-    prepare("""{"data" : [{}], "included": [{}]}""")
-    handler.states should equal(List("startDocument", "startData", "endData", "startIncluded", "endIncluded", "endDocument"))
+    prepare("""{"data":[{}],"included":[{}]}""")
+    handler.states should equal(mutable.MutableList("startDocument", "startData", "endData", "startIncluded", "endIncluded", "endDocument"))
   }
 
   it should "pass extracted resource attributes as soon as they're parsed" in {
-    prepare("""{"data" : [{"id": "1"}, {"id":"2"}, {"id":"3"}, {"id":"4"}]}""")
+    prepare("""{"data":[{"id":"1"},{"id":"2"},{"id":"3"},{"id":"4"}]}""")
     assert(handler.timestamps.toSet.size == 4)
   }
 
-  it should "parse nested attributes array as any other simple attribute" in {
-    prepare("""{"data" : [{"id": "1", "relationships" : [{"id" : "11"},{"id": "22"},{"id": "33"}]}, {"id" : "2"}]}""")
-    assert(handler.timestamps.toSet.size == 2)
-  }
 
   it should "recognize that data with single resource inside should not be streamed" in {
-    prepare("""{"data" : {"id": "1", "relationships" : [{"id" : "11"},{"id": "22"},{"id": "33"}]}}""")
+    prepare("""{"data" : {"id": "1","type":"users"}}""")
     handler.states should equal(List("startDocument", "dataWithoutStreaming", "endDocument"))
   }
 
@@ -90,14 +98,9 @@ class JsonApiParserSpec extends FlatSpec with Matchers with BeforeAndAfterEach {
         |      "relationships": {"phase": {"data": {"type": "phases","id": "123"}}}
         |    }
         |  }]
-        |}  """.stripMargin
+        |}""".stripMargin
     )
-    handler.objectMap should equal(
-      Map("type" -> "structures", "local:id" -> "12",
-        "attributes" -> Map("name" -> "Structure Name"),
-        "relationships" -> Map("phase" -> Map("data" -> Map("type" -> "phases", "id" -> "123")))
-      )
-    )
+    handler.operationType should equal("add")
   }
 }
 

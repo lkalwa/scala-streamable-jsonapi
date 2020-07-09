@@ -1,9 +1,10 @@
 package com.github.lkalwa.scala_streamable_jsonapi
 
-import org.scalatest._
 import com.fasterxml.jackson.core.JsonToken
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should
 
-class JsonApiStackSpec extends FlatSpec {
+class JsonApiStackSpec extends AnyFlatSpec with should.Matchers {
   val stack = new JsonApiStack()
 
   "JsonApiStack" should "return current location" in {
