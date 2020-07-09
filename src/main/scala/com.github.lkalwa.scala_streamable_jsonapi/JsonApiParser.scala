@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.{JsonFactory, JsonToken}
 
 import scala.annotation.tailrec
 
-class JsonApiParser[H <: JsonApiHandler](inputStream: java.io.InputStream, val handler: H) {
+class JsonApiParser[H <: JsonApiHandler](inputStream: java.io.InputStream, val handler: H) extends TypedValue {
   private val parser = new JsonFactory().createParser(inputStream)
   private lazy val stack = new JsonApiStack()
   private var currentSection = ""
@@ -20,18 +20,18 @@ class JsonApiParser[H <: JsonApiHandler](inputStream: java.io.InputStream, val h
    */
 
   @tailrec
-  final def readStream: Unit = {
+  final def readStream(): Unit = {
     if (parser.nextValue != null) {
-      startDocument
-      if (parser.getCurrentName != null) newSection
+      startDocument()
+      if (parser.getCurrentName != null) newSection()
       val parsedData = parse
       if (!streamed && parsedData.isInstanceOf[Map[_, _]]) {
-        passNonStreamedSectionToHandler(parsedData.asInstanceOf[Map[String, Any]])
+        passNonStreamedSectionToHandler(parsedData.asInstanceOf[Map[String, AnyRef]])
       }
-      readStream
+      readStream()
     } else {
-      endDocument
-      parser.close
+      endDocument()
+      parser.close()
     }
   }
 
@@ -67,31 +67,36 @@ class JsonApiParser[H <: JsonApiHandler](inputStream: java.io.InputStream, val h
 
   private def completelyParsed: Boolean = endOfObject && (stack.inTopLevelMemberArray || stack.singleTopLevelObject)
 
-  private def passObject(map: Map[String, Any]): Map[String, Any] = {
+  def passObject(map: Map[String, Any]): Map[String, Any] = {
     currentSection match {
       case "errors" => handler.error(map)
-      case "data" if stack.singleTopLevelObject => handler.data(map) //special treatment for data which is not an Array
-      case "atomic:operations" => handler.operation(map.head._2.toString, map.tail.getOrElse("data", Map()).asInstanceOf[Map[String, Any]])
-      case _ => handler.resource(map)
+      case "data" if stack.singleTopLevelObject => handler.data(new JsonApiResource(map, handler)) //special treatment for data which is not an Array
+      case "atomic:operations" =>
+        handler.operation(
+          typedStringGet(map, "op", identity).getOrElse(""),
+          new JsonApiResource(
+            typedGet[Any, Map[String, AnyRef]](map, "data",
+              _.asInstanceOf[Map[String, AnyRef]]).getOrElse(Map()), handler))
+      case _ => handler.resource(new JsonApiResource(map, handler))
     }
     stack.pop
     Map.empty
   }
 
-  private def startArray: Any = {
+  private def startArray: AnyRef = {
     stack.push(JsonToken.START_ARRAY)
     if (streamed && stack.topLevelMemberArray) {
-      notifyHandlerAboutStreaming
+      notifyHandlerAboutStreaming()
       parseObjectsInArray
     } else
       parseWholeArray()
   }
 
   @tailrec
-  private def parseObjectsInArray: Any = {
+  private def parseObjectsInArray: AnyRef = {
     parser.nextValue()
     if (endOfArray) {
-      notifyIfEndOfSection
+      notifyIfEndOfSection()
       stack.pop
     }  else {
       parse
@@ -120,35 +125,37 @@ class JsonApiParser[H <: JsonApiHandler](inputStream: java.io.InputStream, val h
       case _ => parser.getText
     }
 
-  private def newSection: Unit = if (!currentSection.isEmpty) currentSection = parser.getCurrentName
+  private def newSection(): Unit =
+    if (!currentSection.isEmpty) currentSection = parser.getCurrentName
 
-  private def notifyIfEndOfSection: Unit = if (streamed && parser.getCurrentName == currentSection) endStramingSection
+  private def notifyIfEndOfSection(): Unit =
+    if (streamed && parser.getCurrentName == currentSection) endStreamingSection()
 
-  def startDocument: Unit =
+  def startDocument(): Unit =
     if (currentSection.isEmpty) {
-      handler.startDocument
+      handler.startDocument()
       currentSection = "document"
     }
 
-  def endDocument: Unit = handler.endDocument
+  def endDocument(): Unit = handler.endDocument()
 
   def streamed: Boolean = currentSection == "document" || streamedSections.contains(currentSection)
 
-  def notifyHandlerAboutStreaming: Unit =
+  def notifyHandlerAboutStreaming(): Unit =
     currentSection match {
-      case "data" => handler.startData
-      case "atomic:operations" => handler.startOperations
-      case "included" => handler.startIncluded
-      case "errors" => handler.startErrors
+      case "data" => handler.startData()
+      case "atomic:operations" => handler.startOperations()
+      case "included" => handler.startIncluded()
+      case "errors" => handler.startErrors()
       case _ => None
     }
 
-  def endStramingSection: Unit =
+  def endStreamingSection(): Unit =
     currentSection match {
-      case "data" => handler.endData
-      case "atomic:operations" => handler.endOperations
-      case "included" => handler.endIncluded
-      case "error" => handler.endErrors
+      case "data" => handler.endData()
+      case "atomic:operations" => handler.endOperations()
+      case "included" => handler.endIncluded()
+      case "error" => handler.endErrors()
       case _ => None
     }
 

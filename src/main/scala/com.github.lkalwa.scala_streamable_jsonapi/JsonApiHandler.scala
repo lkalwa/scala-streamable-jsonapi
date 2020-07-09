@@ -10,13 +10,13 @@ trait JsonApiHandler {
 
   def endData(): Unit = {}
 
-  def data(obj: Map[String, Any]): Unit = {}
+  def data(obj: JsonApiResource): Unit = {}
 
   def startIncluded(): Unit = {}
 
   def endIncluded(): Unit = {}
 
-  def resource(obj: Map[String, Any]): Unit = {}
+  def resource(obj: JsonApiResource): Unit = {}
 
   def startErrors(): Unit = {}
 
@@ -34,7 +34,7 @@ trait JsonApiHandler {
 
   def endOperations(): Unit = {}
 
-  def operation(opType: String, obj: Map[String, Any]): Unit =
+  def operation(opType: String, obj: JsonApiResource): Unit =
     opType match {
       case "add" => add(obj)
       case "update" => update(obj)
@@ -42,9 +42,9 @@ trait JsonApiHandler {
       case _ => None
     }
 
-  def add(obj: Map[String, Any]): Unit = {}
+  def add(obj: JsonApiResource): Unit = {}
 
-  def remove(obj: Map[String, Any]): Unit = {}
+  def remove(obj: JsonApiResource): Unit = {}
 
-  def update(obj: Map[String, Any]): Unit = {}
+  def update(obj: JsonApiResource): Unit = {}
 }

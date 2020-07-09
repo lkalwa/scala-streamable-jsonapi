@@ -1,16 +1,17 @@
 package com.github.lkalwa.scala_streamable_jsonapi
 
-class TestHandler extends JsonApiHandler {
-  var objectMap = Map[String, Any]()
-  var timestamps = collection.mutable.MutableList[String]()
-  var states = collection.mutable.MutableList[String]()
-  var errors = collection.mutable.MutableList[Map[String, Any]]()
-  var metaObject = Map[String, Any]()
-  var links = Map[String, Any]()
-  var jsonapi = Map[String, Any]()
+import scala.collection.mutable
 
-  override def resource(obj: Map[String, Any]): Unit = {
-    objectMap = obj
+class TestHandler extends JsonApiHandler {
+  var timestamps = mutable.MutableList[String]()
+  var states: mutable.MutableList[String] = collection.mutable.MutableList[String]()
+  var errors = mutable.MutableList[Map[String, Any]]()
+  var metaObject: Map[String, Any] = Map[String, Any]()
+  var links: Map[String, Any] = Map[String, Any]()
+  var jsonapi: Map[String, Any] = Map[String, Any]()
+  var operationType: String = _
+
+  override def resource(obj: JsonApiResource): Unit = {
     timestamps.+=(System.nanoTime().toString)
   }
 
@@ -18,22 +19,21 @@ class TestHandler extends JsonApiHandler {
 
   override def endDocument(): Unit = states += "endDocument"
 
-  override def startData: Unit = states += "startData"
+  override def startData(): Unit = states += "startData"
 
-  override def endData: Unit = states += "endData"
+  override def endData(): Unit = states += "endData"
 
-  override def data(obj: Map[String, Any]): Unit = {
-    objectMap = obj
+  override def data(obj: JsonApiResource): Unit = {
     states += "dataWithoutStreaming"
   }
 
-  override def startIncluded: Unit = states += "startIncluded"
+  override def startIncluded(): Unit = states += "startIncluded"
 
-  override def endIncluded: Unit = states += "endIncluded"
+  override def endIncluded(): Unit = states += "endIncluded"
 
-  override def startErrors: Unit = states += "startErrors"
+  override def startErrors(): Unit = states += "startErrors"
 
-  override def endErrors: Unit = states += "endErrors"
+  override def endErrors(): Unit = states += "endErrors"
 
   override def startOperations(): Unit =
     states += "startOperations"
@@ -53,5 +53,9 @@ class TestHandler extends JsonApiHandler {
 
   override def links(obj: Map[String, Any]): Unit = links = obj
 
-  override def add(obj: Map[String, Any]): Unit = objectMap = obj
+  override def operation(opType: String, obj: JsonApiResource): Unit = {
+    operationType = opType
+    super.operation(opType, obj)
+
+  }
 }
