@@ -10,7 +10,7 @@ class BasicJsonApiResource(map: Map[String, Any], handler: JsonApiHandler) exten
   val localIdOption = typedStringGet(scalaMap, "local:id", identity)
   val idOption = typedStringGet(scalaMap, "id", identity)
   private val hasAnyId: Boolean = List(localIdOption, idOption).map(_.isDefined).exists(identity)
-  private val hasType: Boolean = resTypeOption.exists(!_.isBlank)
+  private val hasType: Boolean = resTypeOption.exists(!_.isEmpty)
   val isValid: Boolean = hasAnyId && hasType
 
   runValidityCheck()
