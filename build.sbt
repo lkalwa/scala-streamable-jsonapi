@@ -6,7 +6,7 @@ lazy val root = (project in file(".")).
       organization := "com.github.lkalwa",
       scalaVersion := "2.12.7",
       crossScalaVersions := Seq("2.11.12", "2.12.10"),
-      version      := "1.0.0"
+      version      := "1.0.1"
     )),
     name := "scala-streamable-jsonapi",
     libraryDependencies += scalaTest,
