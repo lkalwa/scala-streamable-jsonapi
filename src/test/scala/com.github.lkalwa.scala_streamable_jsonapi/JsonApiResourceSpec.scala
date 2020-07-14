@@ -60,7 +60,7 @@ class JsonApiResourceSpec extends AnyFlatSpec with should.Matchers with BeforeAn
     rels("locations").map(_.size should equal(2))
     rels("employee").map(_.size should equal(1))
     rels("tasks").map(_ should equal(List()))
-    rels("manager") should equal(Some(None))
+    rels("manager") should equal(Option.empty)
   }
 
 }

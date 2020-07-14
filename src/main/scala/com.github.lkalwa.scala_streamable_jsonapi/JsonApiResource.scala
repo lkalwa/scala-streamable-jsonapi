@@ -36,10 +36,8 @@ class JsonApiResource(map: Map[String, Any], handler: JsonApiHandler) extends Ty
     }
 
   private def initializeRels(relationshipsDescription: AnyRef): Option[List[JsonApiResource]] =
-    Option(relationshipsDescription match {
-      case null => None
-      case iterable: Iterable[AnyRef] =>
-        asCollection(iterable).map(rel =>
-          new JsonApiResource(rel, handler))
-    }).asInstanceOf[Option[List[JsonApiResource]]]
+    relationshipsDescription match {
+      case null => Option.empty
+      case iterable: Iterable[AnyRef] => Option(asCollection(iterable).map(rel => new JsonApiResource(rel, handler)))
+    }
 }
