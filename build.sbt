@@ -13,6 +13,21 @@ lazy val root = (project in file(".")).
     libraryDependencies += jackson
   )
 
+lazy val Test = (project in file(".")).
+  settings(
+    inThisBuild(List(
+      organization := "com.github.lkalwa",
+      scalaVersion := "2.12.7",
+      crossScalaVersions := Seq("2.11.12", "2.12.10"),
+      version      := "1.0.3"
+    )),
+    name := "scala-streamable-jsonapi",
+    libraryDependencies += scalaTest,
+    libraryDependencies += scalaTic,
+    libraryDependencies += jackson,
+    libraryDependencies += scalaParser
+  )
+
 homepage := Some(url("https://github.com/lkalwa/scala-streamable-jsonapi"))
 
 scmInfo := Some(ScmInfo(url("https://github.com/lkalwa/scala-streamable-jsonapi"),
