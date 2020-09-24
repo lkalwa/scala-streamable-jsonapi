@@ -1,4 +1,5 @@
 import Dependencies._
+import sbt.Keys.libraryDependencies
 
 lazy val root = (project in file(".")).
   settings(
@@ -9,10 +10,7 @@ lazy val root = (project in file(".")).
       version      := "1.0.3"
     )),
     name := "scala-streamable-jsonapi",
-    libraryDependencies += scalaTest,
-    libraryDependencies += scalaTic,
-    libraryDependencies += jackson,
-    libraryDependencies += scalaParser
+    libraryDependencies += jackson
   )
 
 homepage := Some(url("https://github.com/lkalwa/scala-streamable-jsonapi"))
