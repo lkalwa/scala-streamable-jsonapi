@@ -7,19 +7,7 @@ lazy val root = (project in file(".")).
       organization := "com.github.lkalwa",
       scalaVersion := "2.12.7",
       crossScalaVersions := Seq("2.11.12", "2.12.10"),
-      version      := "1.0.3"
-    )),
-    name := "scala-streamable-jsonapi",
-    libraryDependencies += jackson
-  )
-
-lazy val Test = (project in file(".")).
-  settings(
-    inThisBuild(List(
-      organization := "com.github.lkalwa",
-      scalaVersion := "2.12.7",
-      crossScalaVersions := Seq("2.11.12", "2.12.10"),
-      version      := "1.0.3"
+      version      := "1.0.5"
     )),
     name := "scala-streamable-jsonapi",
     libraryDependencies += scalaTest,
