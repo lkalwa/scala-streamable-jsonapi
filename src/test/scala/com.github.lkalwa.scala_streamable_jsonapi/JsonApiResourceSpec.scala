@@ -17,9 +17,16 @@ class JsonApiResourceSpec extends AnyFlatSpec with should.Matchers with BeforeAn
     jsonApiObj.attributes should equal(Map("name" -> "John"))
   }
 
-  it should "provide basic validity check" in {
+  it should "provide basic validity check 1" in {
     val handler = new TestHandler()
     val jsonApiObj = new JsonApiResource(Map(), handler)
+    handler.errors.map(_("details").toString) should equal(List("missing id or local:id", "missing type"))
+    assert(!jsonApiObj.isValid)
+  }
+
+  it should "provide basic validity check 2" in {
+    val handler = new TestHandler()
+    val jsonApiObj = new JsonApiResource(Map("local:id" -> "", "local:id" -> ""), handler)
     handler.errors.map(_("details").toString) should equal(List("missing id or local:id", "missing type"))
     assert(!jsonApiObj.isValid)
   }

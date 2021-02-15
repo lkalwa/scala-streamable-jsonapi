@@ -1,5 +1,8 @@
 package com.github.lkalwa.scala_streamable_jsonapi
 
+import java.util
+import collection.JavaConverters._
+
 class JsonApiResource(map: Map[String, Any], handler: JsonApiHandler) extends TypedValue {
   protected val scalaMap: Map[String, AnyRef] = map.asInstanceOf[Map[String, AnyRef]]
 
@@ -21,6 +24,8 @@ class JsonApiResource(map: Map[String, Any], handler: JsonApiHandler) extends Ty
   val attributes: Map[String, AnyRef] =
     typedGet[Map[String, AnyRef], Map[String, AnyRef]](scalaMap, "attributes", identity).getOrElse(Map())
 
+  val attributesAsJava: util.Map[String, AnyRef] = attributes.asJava
+
   private val rawRelationships =
     typedGet[Map[String, AnyRef], Map[String, Map[String, Iterable[AnyRef]]]](scalaMap, "relationships",
       _.mapValues(_.asInstanceOf[Map[String, Map[String, Iterable[AnyRef]]]]))
@@ -29,6 +34,9 @@ class JsonApiResource(map: Map[String, Any], handler: JsonApiHandler) extends Ty
   val relationships: Map[String, Option[Iterable[JsonApiResource]]] =
     rawRelationships.map { case (name, relDetails) =>
       name -> initializeRels(relDetails.getOrElse("data", Map())) }
+
+  val relationshipsAsJava: util.Map[String, Iterable[JsonApiResource]] =
+    relationships.map { case (name, rels) => name -> rels.orNull }.asJava
 
   private def asCollection: Iterable[AnyRef] => List[Map[String, String]] =
     {
