@@ -35,8 +35,8 @@ class JsonApiResource(map: Map[String, Any], handler: JsonApiHandler) extends Ty
     rawRelationships.map { case (name, relDetails) =>
       name -> initializeRels(relDetails.getOrElse("data", Map())) }
 
-  val relationshipsAsJava: util.Map[String, Iterable[JsonApiResource]] =
-    relationships.map { case (name, rels) => name -> rels.orNull }.asJava
+  val relationshipsAsJava =
+    relationships.map { case (name, rels) => name -> rels.orNull.asJava }.asJava
 
   private def asCollection: Iterable[AnyRef] => List[Map[String, String]] =
     {
