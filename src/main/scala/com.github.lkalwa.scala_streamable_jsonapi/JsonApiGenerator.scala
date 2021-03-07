@@ -2,6 +2,8 @@ package com.github.lkalwa.scala_streamable_jsonapi
 
 import com.fasterxml.jackson.core.JsonFactory
 
+import scala.collection.mutable
+
 class JsonApiGenerator(outputStream: java.io.OutputStream) {
   private val generator = new JsonFactory().createGenerator(outputStream)
   private var currentSection = ""
@@ -22,6 +24,8 @@ class JsonApiGenerator(outputStream: java.io.OutputStream) {
     jsonObject(obj)
   }
 
+  def data(obj: collection.mutable.Map[String, Any]): Unit = jsonObject(obj.toMap)
+
   def startIncluded(): Unit = {
     fieldName("included", topLevelSection = true)
     startArray()
@@ -30,6 +34,7 @@ class JsonApiGenerator(outputStream: java.io.OutputStream) {
   def endIncluded(): Unit = endArray("included")
 
   def resource(obj: Map[String, Any]): Unit = jsonObject(obj)
+  def resource(obj: mutable.Map[String, Any]): Unit = jsonObject(obj.toMap)
 
   def startErrors(): Unit = {
     fieldName("errors", topLevelSection = true)
@@ -39,6 +44,7 @@ class JsonApiGenerator(outputStream: java.io.OutputStream) {
   def endErrors(): Unit = endArray("errors")
 
   def error(obj: Map[String, Any]): Unit = jsonObject(obj)
+  def error(obj: mutable.Map[String, Any]): Unit = jsonObject(obj.toMap)
 
   def meta(obj: Map[String, Any]): Unit = {
     fieldName("meta", topLevelSection = true)
@@ -61,6 +67,7 @@ class JsonApiGenerator(outputStream: java.io.OutputStream) {
   }
 
   def atomicResult(obj: Map[String, Any]): Unit = jsonObject(Map("data" -> obj))
+  def atomicResult(obj: mutable.Map[String, Any]): Unit = jsonObject(Map("data" -> obj))
 
   def endAtomicResults(): Unit = endArray("atomic:results")
 
